@@ -25,7 +25,7 @@ if (contactForm) {
       message: formData.get('message')
     };
     try {
-      const response = await fetch('http://localhost:5050/api/contact', {
+      const response = await fetch('https://aamir-website-backend.onrender.com/api/contact', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(data)
