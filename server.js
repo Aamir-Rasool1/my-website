@@ -9,19 +9,38 @@ require('dotenv').config();
 const app = express();
 const PORT = process.env.PORT || 5050;
 
-// CORS Middleware (must be before routes)
+// --- START: Updated CORS Configuration ---
+
+// Define allowed origins for CORS
+// It will use your live frontend URL from Render's environment variables
+// and fall back to your local development URL if it's not set.
+const allowedOrigins = [
+  process.env.CORS_ORIGIN, 
+  'http://127.0.0.1:5500'
+];
+
+// CORS Middleware
 app.use(cors({
-  origin: 'http://127.0.0.1:5500',
+  origin: function (origin, callback) {
+    // Allow requests with no origin (like mobile apps or curl requests)
+    if (!origin) return callback(null, true);
+    
+    // Allow if the origin is in our list
+    if (allowedOrigins.indexOf(origin) === -1) {
+      const msg = 'The CORS policy for this site does not allow access from the specified Origin.';
+      return callback(new Error(msg), false);
+    }
+    return callback(null, true);
+  },
   methods: ['GET', 'POST', 'OPTIONS'],
   allowedHeaders: ['Content-Type']
 }));
 
 // Handle preflight requests for all routes
-app.options('*', cors({
-  origin: 'http://127.0.0.1:5500',
-  methods: ['GET', 'POST', 'OPTIONS'],
-  allowedHeaders: ['Content-Type']
-}));
+app.options('*', cors()); 
+
+// --- END: Updated CORS Configuration ---
+
 
 app.use(express.json());
 
